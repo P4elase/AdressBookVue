@@ -1,0 +1,71 @@
+{
+  "name": "Navigator",
+  "id": "/",
+  "short_name": "Navigator",
+  "start_url": "/",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "window-controls-overlay"
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "mailto",
+      "url": "/newEmail?to=%s"
+    }
+  ],
+  "description": "Simple navigator application",
+  "lang": "ru",
+  "dir": "auto",
+  "theme_color": "#007bff",
+  "background_color": "#0056b3",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "src/assets/android-launchericon-512-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "src/assets/android-launchericon-192-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "src/assets/android-launchericon-96-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "src/screens/screenshot1.png",
+      "sizes": "960x1360",
+      "type": "image/png",
+      "description": "A screenshot of the home page"
+    },
+    {
+      "src": "src/screens/screenshot2.png",
+      "sizes": "2683x1384",
+      "type": "image/png",
+      "form_factor": "wide",
+      "description": "A screenshot of the home page (wide)"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Home",
+      "url": "/",
+      "description": "Home page",
+      "icons": [
+        {
+          "src": "src/assets/android-launchericon-96-96.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+}
