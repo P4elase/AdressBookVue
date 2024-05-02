@@ -25,7 +25,7 @@ export default {
 .tab-content{
     min-height: 70vh;
     max-height: 90vh;
-    padding: 20px;
+    padding: 0.5em;
     border-radius: 5px;
     box-shadow: 0 3px 5px 5px rgba(0, 0, 0, 0.05);
 }
