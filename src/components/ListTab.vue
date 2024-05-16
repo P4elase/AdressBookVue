@@ -1,8 +1,8 @@
 <template>
 
+  <h2>Поиск по карте</h2>
   <div class="inputs">
     <label>
-      Поиск по карте
       <input v-model="search" type="text" list="search" placeholder="Начните вводить для поиска" autocomplete="off"
         @change="onSearchChange">
       <datalist id="search">
@@ -57,7 +57,6 @@ const selectedSearch = ref<LngLat | null>(null);
 const search = ref('');
 const searchResponse = shallowRef<null | SearchResponse>(null);
 
-//search
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -65,7 +64,6 @@ function sleep(ms: number) {
 watch(search, async (val) => {
   if (!val) return;
 
-  // Проверка, что уже координаты
   if (val.split(/[,.]/).length === 4) {
     selectedSearch.value = val.split(',').map((x) => parseFloat(x)) as LngLat;
     return;
@@ -74,6 +72,7 @@ watch(search, async (val) => {
   await sleep(300);
   if (val !== search.value) return;
 
+  // eslint-disable-next-line no-undef
   searchResponse.value = await ymaps3.search({
     text: val,
     bounds: map.value?.bounds,
@@ -82,68 +81,24 @@ watch(search, async (val) => {
 }
 );
 
-//////////////////////////predlozhka phind
-// Добавьте эту функцию в ваш скрипт
 function onSearchChange(event) {
-  const selectedValue = event.target.value; // Получаем выбранное значение из input
-  const selectedCoordinates = selectedValue.split(','); // Разбиваем координаты на отдельные значения
+  const selectedValue = event.target.value;
+  const selectedCoordinates = selectedValue.split(',');
 
-  // Создаем объект с выбранными данными
   const selectedAddress = {
     id: Date.now() + Math.random().toString(36).substr(2, 9),
     coordinates: selectedCoordinates,
     address: searchResponse.value.find(item => item.geometry?.coordinates.join(',') === selectedValue)?.properties.name || ''
   };
 
-  // Читаем текущие данные из локального хранилища
   let currentStreets = JSON.parse(localStorage.getItem('streets')) || [];
 
-  // Добавляем новый объект в массив
   currentStreets.push(selectedAddress);
 
-  // Сохраняем обновленный массив обратно в локальное хранилище
   localStorage.setItem('streets', JSON.stringify(currentStreets));
-  search.value = ''; // Очищаем поле ввода
+  search.value = '';
   loadList();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //////////////////////////////////Создание и обновление списка////////////////////////////////
 interface StreetItemInterface {
@@ -209,7 +164,7 @@ function saveToLocalStorage() {
 
 .inputs {
   display: grid;
-  grid-template-columns: repeat(1, 80%);
+  grid-template-columns: repeat(1, 96%);
   justify-content: space-between;
   margin-bottom: 20px;
 

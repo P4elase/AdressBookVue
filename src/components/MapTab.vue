@@ -23,9 +23,13 @@
       </yandex-map-control-button>
     </yandex-map-controls>
 
-    <yandex-map-default-marker v-for="marker in markers" :key="marker.title" :settings="marker" />
+    <yandex-map-default-marker v-for="marker in markers" :key="marker.id" :settings="marker" />
+
+    <yandex-map-default-marker v-for="marker in mainMarkers" :key="marker.title" :settings="marker" />
 
   </yandex-map>
+
+  <button @click="addMarkersToMap">Добавить маркеры на карту</button>
 </template>
 
 <script setup lang="ts">
@@ -34,35 +38,90 @@ import { LngLat, YMap } from '@yandex/ymaps3-types';
 import { YandexMap, YandexMapDefaultSchemeLayer, YandexMapDefaultFeaturesLayer, YandexMapMarker, YandexMapZoomControl, YandexMapControls, YandexMapDefaultMarker, YandexMapGeolocationControl, YandexMapControlButton } from 'vue-yandex-maps';
 
 
-//Можно использовать для различных преобразований
 const map = shallowRef<null | YMap>(null);
-
-//markers test
+const markers = ref([]);
 const timedCounter = ref(1);
+const isFullscreen = ref(false);
 
-const markers = [
+const mainMarkers = [
   {
     coordinates: [43.929114, 56.328619] as LngLat,
-    color: '#01BBEA',
+    color: 'red',
     title: 'Поликлиника №19',
     subtitle: `Гордеевская 40`,
   },
+  {
+    coordinates: [43.929427, 56.337075] as LngLat,
+    color: 'red',
+    title: 'Поликлиника №19',
+    subtitle: `Есенина 46А`,
+  },
+  {
+    coordinates: [43.935577, 56.313545] as LngLat,
+    color: 'red',
+    title: 'Поликлиника №19',
+    subtitle: `Чкалова 41`,
+  },
 ];
 
-const isFullscreen = ref(false);
+function addMarkersToMap() {
+
+  const storedData = JSON.parse(localStorage.getItem('streets') || '[]');
+
+  markers.value = [];
+
+  storedData.forEach(item => {
+
+    const addressParts = item.address.split('подъезд');
+
+    if (addressParts.length > 1) {
+
+      let title = addressParts[0].trim();
+
+      if (title.startsWith('улица')) {
+        title = title.replace(/^улица\s+/, '').trim();
+      }
+
+      title = title.replace(/улица,/gi, '');
+
+      const markerSettings = {
+        coordinates: item.coordinates.map(coord => parseFloat(coord)),
+        title: title,
+        subtitle: `подъезд ${addressParts[1]}`.trim(),
+        color: '#01BBEA',
+      };
+
+      markers.value.push(markerSettings);
+    } else {
+      const markerSettings = {
+        coordinates: item.coordinates.map(coord => parseFloat(coord)),
+        title: item.address.trim().replace(/улица/gi, ''),
+        subtitle: '', 
+        color: '#01BBEA',
+      };
+
+      markers.value.push(markerSettings);
+    }
+  });
+}
 
 const toggleFullscreen = () => {
-  // The document.fullscreenElement returns the Element that is currently being presented in fullscreen mode in this document, or null if fullscreen mode is not currently in use
+
   if (isFullscreen.value) {
-    // The document.exitFullscreen() requests that the element on this document which is currently being presented in fullscreen mode be taken out of fullscreen mode
+
     document.exitFullscreen();
   } else {
-    // The element.requestFullscreen() method issues an asynchronous request to make the element be displayed in fullscreen mode
+
     map.value!.container.requestFullscreen();
   }
 };
 
 onMounted(() => {
+
+  if (localStorage.getItem('streets')) {
+    addMarkersToMap();
+  }
+
   const handleFullscreenChange = async () => {
     isFullscreen.value = !!document.fullscreenElement;
   };
