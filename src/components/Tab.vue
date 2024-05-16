@@ -23,7 +23,7 @@ export default {
 
 <style scoped>
 .tab-content{
-    min-height: 70vh;
+    min-height: 80vh;
     max-height: 90vh;
     padding: 0.5em;
     border-radius: 5px;

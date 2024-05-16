@@ -1,115 +1,229 @@
 <template>
-    <div>
-        <div class="input">
-            <input type="text" ref="street" v-model="street" placeholder="Улица" required>
-            <input type="number" v-model="home" placeholder="Дом">
-        </div>
-        <div id="org_div0">
-            <button @click="createList">Добавить адрес</button>
-        </div>
 
-        <div id="org_div1" style="display: none;">≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡</div>
-        <h3 v-if="isEmptyList">Ваш список пуст</h3>
+  <div class="inputs">
+    <label>
+      Поиск по карте
+      <input v-model="search" type="text" list="search" placeholder="Начните вводить для поиска" autocomplete="off"
+        @change="onSearchChange">
+      <datalist id="search">
+        <option v-for="(item, index) in searchResponse ?? []" :key="item.geometry?.coordinates.join(',') ?? index"
+          :value="item.geometry?.coordinates">
+          {{ item.properties.name }} ({{ item.properties.description }})
+        </option>
+      </datalist>
+    </label>
+  </div>
 
-        <div class="scrollable-list">
-            <!-- Использование компонента StreetItem для каждого элемента списка -->
-            <StreetItem v-for="item in streets" :key="item.id" :street="item.street" :home="item.home" :id="item.id"
-                :deleteItem="deleteItem" />
+  <div>
+    <yandex-map v-model="map" :settings="{
+      location: {
+        center: [43.958455, 56.326036],
+        zoom: 10,
+      },
+    }" width="100%" height="0vh">
+    </yandex-map>
+    <h3 v-if="isEmptyList">Ваш список пуст</h3>
+    <datalist id="search">
+      <option v-for="(item, index) in searchResponse ?? []" :key="item.geometry?.coordinates.join(',') ?? index"
+        :value="item.geometry?.coordinates" :id="`search-option-${item.geometry?.coordinates}`">
+        {{ item.properties.name }} ({{ item.properties.description }})
+      </option>
+    </datalist>
 
-        </div>
-        <div id="org_div2" style="display: none;">≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡</div>
-
-        <div id="org_div3">
-            <button id="btn2" @click="clearAll">Очистить весь список</button>
-        </div>
+    <div class="scrollable-list">
+      <StreetItem v-for="item in streets" :key="item.id" :address="item.address" :id="item.id"
+        @delete-item="deleteItem" />
     </div>
+
+    <div id="org_div3">
+      <button id="btn2" @click="clearAll">Очистить весь список</button>
+    </div>
+  </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, onMounted, shallowRef, watch } from 'vue';
 import StreetItem from './StreetItem.vue';
 
-export default {
-    components: {
-        StreetItem,
-    },
-    data() {
-        return {
-            street: '',
-            home: '',
-            streets: [],
-            isEmptyList: true,
-        };
-    },
-    mounted() {
-        this.loadList();
-    },
-    methods: {
-        loadList() {
-            // Проверяем, существует ли ключ 'streets' в localStorage
-            if (localStorage.getItem('streets') !== null) {
-                // Если ключ существует, парсим и присваиваем значение переменной this.streets
-                this.streets = JSON.parse(localStorage.getItem('streets'));
-                // Если список не пуст, устанавливаем isEmptyList в false
-                this.isEmptyList = this.streets.length === 0;
-            } else {
-                // Если ключ не существует, создаем пустой массив и сохраняем его в localStorage
-                this.streets = [];
-                localStorage.setItem('streets', JSON.stringify(this.streets));
-                // Устанавливаем isEmptyList в true, так как список пуст
-                this.isEmptyList = true;
-            }
-        },
+import { LngLat, YMap } from '@yandex/ymaps3-types';
+import { SearchResponse } from '@yandex/ymaps3-types/imperative/search';
+import { YandexMap } from 'vue-yandex-maps';
 
-        createList() {
-            if (this.street && this.home) {
-                if (Math.sign(this.home) <= 0) {
-                    alert("Введите корректный номер дома");
-                    this.home = '';
-                    return;
-                }
-                const id = Date.now() + Math.random().toString(36).substr(2, 9);
-                const newStreet = { id, street: this.street, home: this.home };
-                this.streets.push(newStreet);
-                this.saveToLocalStorage();
-                this.street = '';
-                this.home = '';
-                this.$refs.street.focus();
-                this.loadList();
-            } else {
-                alert('Пожалуйста, заполните все поля.');
-            }
-        },
-        deleteItem(id) {
-            // Фильтрация массива, чтобы удалить элемент с указанным ID
-            this.streets = this.streets.filter(item => item.id !== id);
-            // Сохранение обновленного списка в localStorage
-            this.saveToLocalStorage();
-            this.loadList();
-        },
-        clearAll() {
-            if (Object.keys(this.streets).length > 0) {
-                if (confirm("Удалить все записи?")) {
-                    this.streets = [];
-                    this.saveToLocalStorage();
-                    this.loadList();
-                }
-            } else {
-                alert("Ваш список уже пустой");
-            }
-        },
-        saveToLocalStorage() {
-            localStorage.setItem('streets', JSON.stringify(this.streets));
-        },
-    },
-};
+//////////////////////////////////Поиск по карте////////////////////////////////
+const map = shallowRef<null | YMap>(null);
+
+const selectedSearch = ref<LngLat | null>(null);
+
+const search = ref('');
+const searchResponse = shallowRef<null | SearchResponse>(null);
+
+//search
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+watch(search, async (val) => {
+  if (!val) return;
+
+  // Проверка, что уже координаты
+  if (val.split(/[,.]/).length === 4) {
+    selectedSearch.value = val.split(',').map((x) => parseFloat(x)) as LngLat;
+    return;
+  }
+
+  await sleep(300);
+  if (val !== search.value) return;
+
+  searchResponse.value = await ymaps3.search({
+    text: val,
+    bounds: map.value?.bounds,
+  });
+
+}
+);
+
+//////////////////////////predlozhka phind
+// Добавьте эту функцию в ваш скрипт
+function onSearchChange(event) {
+  const selectedValue = event.target.value; // Получаем выбранное значение из input
+  const selectedCoordinates = selectedValue.split(','); // Разбиваем координаты на отдельные значения
+
+  // Создаем объект с выбранными данными
+  const selectedAddress = {
+    id: Date.now() + Math.random().toString(36).substr(2, 9),
+    coordinates: selectedCoordinates,
+    address: searchResponse.value.find(item => item.geometry?.coordinates.join(',') === selectedValue)?.properties.name || ''
+  };
+
+  // Читаем текущие данные из локального хранилища
+  let currentStreets = JSON.parse(localStorage.getItem('streets')) || [];
+
+  // Добавляем новый объект в массив
+  currentStreets.push(selectedAddress);
+
+  // Сохраняем обновленный массив обратно в локальное хранилище
+  localStorage.setItem('streets', JSON.stringify(currentStreets));
+  search.value = ''; // Очищаем поле ввода
+  loadList();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//////////////////////////////////Создание и обновление списка////////////////////////////////
+interface StreetItemInterface {
+  id: string;
+  address: string;
+}
+
+let streets = ref<StreetItemInterface[]>([]);
+let isEmptyList = ref(true);
+
+onMounted(loadList);
+
+async function loadList() {
+  const storedStreets = localStorage.getItem('streets');
+  if (storedStreets) {
+    streets.value = JSON.parse(storedStreets);
+    isEmptyList.value = streets.value.length === 0;
+  } else {
+    streets.value = [];
+    localStorage.setItem('streets', JSON.stringify(streets.value));
+    isEmptyList.value = true;
+  }
+}
+
+function deleteItem(id: string) {
+  streets.value = streets.value.filter(item => item.id !== id);
+  saveToLocalStorage();
+  loadList();
+}
+
+function clearAll() {
+  if (streets.value.length > 0) {
+    if (confirm("Удалить все записи?")) {
+      streets.value = [];
+      saveToLocalStorage();
+      loadList();
+    }
+  } else {
+    alert("Ваш список уже пустой");
+  }
+}
+
+function saveToLocalStorage() {
+  localStorage.setItem('streets', JSON.stringify(streets.value));
+}
 </script>
+
+
 
 <style scoped>
 .scrollable-list {
-    max-height: 45vh; /* Высота контейнера, при превышении которой появляется полоса прокрутки */
-    overflow-y: auto; /* Автоматическая прокрутка по вертикали */
+  max-height: 45vh;
+  overflow-y: auto;
 }
-#btn2{
-    margin-top: 0.5em;
+
+.hidden-element {
+  display: none;
+}
+
+#btn2 {
+  margin-top: 0.5em;
+}
+
+.inputs {
+  display: grid;
+  grid-template-columns: repeat(1, 80%);
+  justify-content: space-between;
+  margin-bottom: 20px;
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    input {
+      padding: 10px;
+      border-radius: 5px;
+      color: var(--vp-button-alt-text);
+      background: var(--vp-button-alt-bg);
+    }
+  }
 }
 </style>

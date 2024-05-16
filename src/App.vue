@@ -24,4 +24,7 @@ import MapTab from './components/MapTab.vue';
 
 </script>
 
-<style scoped></style>
+<style scoped>
+
+
+</style>
