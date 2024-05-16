@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, shallowRef, onMounted, onBeforeUnmount } from 'vue';
+import { ref, shallowRef, onMounted, onBeforeUnmount} from 'vue';
 import { LngLat, YMap } from '@yandex/ymaps3-types';
 import { YandexMap, YandexMapDefaultSchemeLayer, YandexMapDefaultFeaturesLayer, YandexMapMarker, YandexMapZoomControl, YandexMapControls, YandexMapDefaultMarker, YandexMapGeolocationControl, YandexMapControlButton } from 'vue-yandex-maps';
 
@@ -65,17 +65,14 @@ const mainMarkers = [
 ];
 
 function addMarkersToMap() {
-
   const storedData = JSON.parse(localStorage.getItem('streets') || '[]');
 
   markers.value = [];
 
   storedData.forEach(item => {
-
     const addressParts = item.address.split('подъезд');
 
     if (addressParts.length > 1) {
-
       let title = addressParts[0].trim();
 
       if (title.startsWith('улица')) {
@@ -96,7 +93,7 @@ function addMarkersToMap() {
       const markerSettings = {
         coordinates: item.coordinates.map(coord => parseFloat(coord)),
         title: item.address.trim().replace(/улица/gi, ''),
-        subtitle: '', 
+        subtitle: '',
         color: '#01BBEA',
       };
 

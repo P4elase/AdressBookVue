@@ -109,8 +109,6 @@ interface StreetItemInterface {
 let streets = ref<StreetItemInterface[]>([]);
 let isEmptyList = ref(true);
 
-onMounted(loadList);
-
 async function loadList() {
   const storedStreets = localStorage.getItem('streets');
   if (storedStreets) {
@@ -144,6 +142,9 @@ function clearAll() {
 function saveToLocalStorage() {
   localStorage.setItem('streets', JSON.stringify(streets.value));
 }
+
+onMounted(loadList);
+
 </script>
 
 
