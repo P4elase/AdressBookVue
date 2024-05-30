@@ -10,6 +10,10 @@ This is a dev (not built) NavigatorVue repo
 
 See [Vite Configuration Reference](https://vitejs.dev/config/).
 
+## Map Visibility
+
+Use your own YandexApi Key in src/main.js
+
 ## Project Setup
 
 ```sh
