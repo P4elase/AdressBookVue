@@ -16,6 +16,13 @@ See [Vite Configuration Reference](https://vitejs.dev/config/).
 npm install
 ```
 
+## Project Setup
+required node modules
+ -- vue-yandex-maps
+ -- @yandex/ymaps3-types
+ -- bootstrap
+ -- @types
+
 ### Compile and Hot-Reload for Development
 
 ```sh
