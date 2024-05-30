@@ -1,18 +1,23 @@
 <template>
 
   <h2>Поиск по карте</h2>
-  <div class="inputs">
-    <label>
-      <input v-model="search" type="text" list="search" placeholder="Начните вводить для поиска" autocomplete="off"
-        @change="onSearchChange">
-      <datalist id="search">
+  <div class="container">
+      <div class="inputs">
+        <div class="col-12">
+          <label>
+            <input class="col-12" v-model="search" type="search" list="search" placeholder="Начните вводить для поиска" autocomplete="off" @focusin="showDropdown" @focusout="hideDropdown" >
+          </label>
+        </div>
+      </div>
+      <dropdown-list class="col-9" id="search">
         <option v-for="(item, index) in searchResponse ?? []" :key="item.geometry?.coordinates.join(',') ?? index"
-          :value="item.geometry?.coordinates">
-          {{ item.properties.name }} ({{ item.properties.description }})
-        </option>
-      </datalist>
-    </label>
+          :value="item.geometry?.coordinates" :id="`search-option-${item.geometry?.coordinates}`"
+          @click="onSearchChange">
+          {{ item.properties.name }} ({{ item.properties.description }} )
+      </option>
+      </dropdown-list>
   </div>
+  <br>
 
   <div>
     <yandex-map v-model="map" :settings="{
@@ -23,13 +28,7 @@
     }" width="100%" height="0vh">
     </yandex-map>
     <h3 v-if="isEmptyList">Ваш список пуст</h3>
-    <datalist id="search">
-      <option v-for="(item, index) in searchResponse ?? []" :key="item.geometry?.coordinates.join(',') ?? index"
-        :value="item.geometry?.coordinates" :id="`search-option-${item.geometry?.coordinates}`">
-        {{ item.properties.name }} ({{ item.properties.description }})
-      </option>
-    </datalist>
-
+    
     <div class="scrollable-list">
       <StreetItem v-for="item in streets" :key="item.id" :address="item.address" :id="item.id"
         @delete-item="deleteItem" />
@@ -80,7 +79,7 @@ watch(search, async (val) => {
 
 }
 );
-
+// save to local storage
 function onSearchChange(event) {
   const selectedValue = event.target.value;
   const selectedCoordinates = selectedValue.split(',');
@@ -97,8 +96,22 @@ function onSearchChange(event) {
 
   localStorage.setItem('streets', JSON.stringify(currentStreets));
   search.value = '';
+  hideDropdown();
   loadList();
 }
+
+
+// search box hide and seek
+async function hideDropdown(){
+  await sleep(100);
+  let list = document.getElementById('search');
+  list.style.display="none";
+}
+function showDropdown(){
+  let list = document.getElementById('search');
+  list.style.display="";
+}
+
 
 //////////////////////////////////Создание и обновление списка////////////////////////////////
 interface StreetItemInterface {
@@ -109,6 +122,7 @@ interface StreetItemInterface {
 let streets = ref<StreetItemInterface[]>([]);
 let isEmptyList = ref(true);
 
+// list update
 async function loadList() {
   const storedStreets = localStorage.getItem('streets');
   if (storedStreets) {
@@ -121,6 +135,7 @@ async function loadList() {
   }
 }
 
+// list position delete
 function deleteItem(id: string) {
   streets.value = streets.value.filter(item => item.id !== id);
   saveToLocalStorage();
@@ -164,15 +179,9 @@ onMounted(loadList);
 }
 
 .inputs {
-  display: grid;
+  display: flex;
   grid-template-columns: repeat(1, 96%);
   justify-content: space-between;
-  margin-bottom: 20px;
-
-  label {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
 
     input {
       padding: 10px;
@@ -180,6 +189,30 @@ onMounted(loadList);
       color: var(--vp-button-alt-text);
       background: var(--vp-button-alt-bg);
     }
-  }
 }
+
+dropdown-list {
+  display: list-item;
+  max-width: 560px;
+  position: absolute;
+  z-index: 99;
+}
+
+dropdown-list>#search.col-9::marker {
+  display: none;
+}
+option {
+  display: flex;
+  flex-wrap: wrap;
+  text-wrap: wrap;
+  background-color: aliceblue;
+  color: black;
+  width: 100%;
+  padding: 0.3em;
+}
+
+option:hover {
+  background-color: #0056b3;
+}
+
 </style>

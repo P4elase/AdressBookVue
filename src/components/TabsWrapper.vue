@@ -42,6 +42,7 @@ ul {
 
 .tabs__header {
     background-color: rgb(18, 166, 203);
+    border-radius: 5%;
     list-style: none;
     padding-left: 0em;
     padding-right: 0em;
@@ -59,7 +60,7 @@ ul {
 
 .tabs__header li {
     color: black;
-    width: 6em;
+    width: 5em;
     text-align: center;
     padding: 1em 1em 1em;
     margin: 0.5em 0.5em 0.5em;

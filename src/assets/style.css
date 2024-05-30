@@ -1,3 +1,6 @@
+/* можно или из cdn использовать бутстрап, или из модулей */
+@import "./node_modules/bootstrap/scss/bootstrap.scss";
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -71,7 +74,6 @@ section {
 
 label {
     display: block;
-    margin-bottom: 5px;
 }
 
 .input {

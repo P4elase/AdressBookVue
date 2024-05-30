@@ -28,8 +28,8 @@
     <yandex-map-default-marker v-for="marker in mainMarkers" :key="marker.title" :settings="marker" />
 
   </yandex-map>
-
-  <button @click="addMarkersToMap">Добавить маркеры на карту</button>
+  <br>
+  <button @click="addMarkersToMap">Обновить маркеры на карте</button>
 </template>
 
 <script setup lang="ts">
@@ -43,6 +43,7 @@ const markers = ref([]);
 const timedCounter = ref(1);
 const isFullscreen = ref(false);
 
+// red markers on map
 const mainMarkers = [
   {
     coordinates: [43.929114, 56.328619] as LngLat,
@@ -64,6 +65,7 @@ const mainMarkers = [
   },
 ];
 
+// load json and seek on map
 function addMarkersToMap() {
   const storedData = JSON.parse(localStorage.getItem('streets') || '[]');
 

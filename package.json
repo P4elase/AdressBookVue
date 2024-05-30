@@ -10,6 +10,8 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "@popperjs/core": "^2.11.8",
+    "bootstrap": "^5.3.3",
     "multi-geocoder": "^0.1.1",
     "vue": "^3.4.26",
     "vue-tsc": "^2.0.14",
@@ -22,6 +24,7 @@
     "eslint": "^8.57.0",
     "eslint-plugin-vue": "^9.23.0",
     "http-server": "14.1.1",
+    "sass": "^1.77.3",
     "typescript": "^5.4.5",
     "vite": "^5.2.10"
   }
