@@ -1,6 +1,9 @@
 <template>
-
-  <h2>Поиск по карте</h2>
+    <nav>
+        <h1><img src="../img/house-heart.svg" alt="Cart" id="navicon"> Список адресов</h1>
+    </nav>
+    <br>
+  <!-- <h2>Поиск по карте</h2> -->
   <div class="container">
       <div class="inputs">
         <div class="col-12">
@@ -9,7 +12,7 @@
           </label>
         </div>
       </div>
-      <dropdown-list class="col-9" id="search">
+      <dropdown-list class="col-10" id="search">
         <option v-for="(item, index) in searchResponse ?? []" :key="item.geometry?.coordinates.join(',') ?? index"
           :value="item.geometry?.coordinates" :id="`search-option-${item.geometry?.coordinates}`"
           @click="onSearchChange">
@@ -33,11 +36,12 @@
       <StreetItem v-for="item in streets" :key="item.id" :address="item.address" :id="item.id"
         @delete-item="deleteItem" />
     </div>
-
+    <br>
     <div id="org_div3">
       <button id="btn2" @click="clearAll">Очистить весь список</button>
     </div>
   </div>
+  <br>
 </template>
 
 <script setup lang="ts">
@@ -165,8 +169,25 @@ onMounted(loadList);
 
 
 <style scoped>
+
+label{
+  display: block;
+}
+.dropdown-list option ul li:focus::marker {
+  display: none;
+}
+
+.dropdown-list::before,
+.dropdown-list::after {
+  content: none;
+}
+
+.tab-icon {
+  display: flex;
+  align-items: center;
+}
 .scrollable-list {
-  max-height: 45vh;
+  max-height: 59vh;
   overflow-y: auto;
 }
 
@@ -201,7 +222,12 @@ dropdown-list {
 dropdown-list>#search.col-9::marker {
   display: none;
 }
+
+
 option {
+  min-height: 4em;
+  border-style: solid;
+  border-color: dimgray;
   display: flex;
   flex-wrap: wrap;
   text-wrap: wrap;
@@ -209,6 +235,21 @@ option {
   color: black;
   width: 100%;
   padding: 0.3em;
+}
+.col-10{
+  width: 90%;
+}
+
+.dark-mode option{
+  background-color: rgb(12, 11, 11);
+  color: aliceblue;
+  width: 100%;
+  padding: 0.3em;
+  border-style: solid;
+  border-color: dimgray;
+  display: flex;
+  flex-wrap: wrap;
+  text-wrap: wrap;
 }
 
 option:hover {

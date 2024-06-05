@@ -1,16 +1,14 @@
-/* можно или из cdn использовать бутстрап, или из модулей */
-@import "./node_modules/bootstrap/scss/bootstrap.scss";
 
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4;
+    background-color: #fff;
     min-height: 100vh;
 }
 
 .dark-mode {
-    background-color: #000;
+    background-color: #282727;
     color: #fff;
 }
 
@@ -59,12 +57,9 @@ h4 {
     max-height: 1em;
 }
 section {
-    min-height: 100vh;
-    max-height: 100vh;
     max-width: 608px;
     margin: 0 auto;
     background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .dark-mode section {
@@ -100,9 +95,9 @@ input[type="number"] {
 button {
     background-color: #007bff;
     color: #fff;
-    padding: 10px 20px;
+    padding: 0.5em 0.5em;
     border: none;
-    border-radius: 4px;
+    border-radius: 10px;
     cursor: pointer;
     font-size: 16px;
     margin-left: 10px;

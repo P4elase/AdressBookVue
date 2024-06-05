@@ -4,7 +4,6 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
 
-
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
@@ -20,5 +19,6 @@ export default defineConfig({
       "./node_modules/@types",
       "./node_modules/@yandex/ymaps3-types"
     ]
-  }
+  },
 })
+

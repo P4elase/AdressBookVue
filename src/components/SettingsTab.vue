@@ -1,4 +1,8 @@
 <template>
+          <nav>
+        <h1><img src="../img/house-heart.svg" alt="Cart" id="navicon"> Настройки</h1>
+    </nav>
+    <br>
     <h2>Введите адрес и дом</h2>
     <h4>* Форма внизу создает позицию в Вашем списке.</h4>
     <h4>* Для каждой позиции будет доступна кнопка <b>"Удалить"</b>, для защиты от случайного удаления необходимо
@@ -8,19 +12,21 @@
     <h4>* Кнопка <b>"Очистить весь список"</b> удаляет сразу все позиции в списке.</h4>
     <h4>* Приятного использования!</h4>
     <div id="org_div5">
-        <h3>Темный режим</h3>
+        <h4>Темный режим</h4>
 
         <label class="switch">
             <input type="checkbox" v-model="isDarkMode" @change="toggleDarkMode">
             <span class="slider round"></span>
         </label>
     </div>
+    <br>
     <div class="install">
         <button id="install" hidden>Установить приложение</button>
     </div>
     <footer>
-        <h5>All rights NOT reserved®</h5>
-        <h5><a href="https://github.com/P4elase" target="_blank" rel="noopener noreferrer">GitHub@P4elase</a></h5>
+        <br>
+        <h6>All rights NOT reserved®</h6>
+        <h6><a href="https://github.com/P4elase" target="_blank" rel="noopener noreferrer">GitHub@P4elase</a></h6>
         <br>
     </footer>
 

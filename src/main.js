@@ -4,7 +4,6 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import { createYmaps } from 'vue-yandex-maps';
 import { VueYandexMaps } from 'vue-yandex-maps';
-import * as bootstrap from 'bootstrap'
 
 
 const app = createApp(App);

@@ -1,10 +1,15 @@
 <template>
+      <nav>
+        <h1><img src="../img/house-heart.svg" alt="Cart" id="navicon"> Карта</h1>
+    </nav>
+    <br>
   <yandex-map v-model="map" :settings="{
     location: {
       center: [43.929114, 56.328619],
       zoom: 14,
     },
-  }" width="100%" height="70vh">
+    behaviors: BEHAVIOR,
+  }" width="100%" height="80vh">
     <yandex-map-default-scheme-layer />
 
     <yandex-map-default-features-layer />
@@ -22,20 +27,34 @@
         <div class="fullscreen" :class="{ 'exit-fullscreen': isFullscreen }"></div>
       </yandex-map-control-button>
     </yandex-map-controls>
+    <yandex-map-listener
+    :settings="{
+      // onUpdate: addMarkersToMap(),
+      onActionStart: createEvent('behavior', false),
+    }"
+  />
 
     <yandex-map-default-marker v-for="marker in markers" :key="marker.id" :settings="marker" />
 
     <yandex-map-default-marker v-for="marker in mainMarkers" :key="marker.title" :settings="marker" />
 
   </yandex-map>
-  <br>
-  <button @click="addMarkersToMap">Обновить маркеры на карте</button>
+  <!-- <br>
+  <button @click="addMarkersToMap">Обновить маркеры на карте</button> -->
 </template>
 
 <script setup lang="ts">
-import { ref, shallowRef, onMounted, onBeforeUnmount} from 'vue';
-import { LngLat, YMap } from '@yandex/ymaps3-types';
-import { YandexMap, YandexMapDefaultSchemeLayer, YandexMapDefaultFeaturesLayer, YandexMapMarker, YandexMapZoomControl, YandexMapControls, YandexMapDefaultMarker, YandexMapGeolocationControl, YandexMapControlButton } from 'vue-yandex-maps';
+import { ref, shallowRef, onMounted, onBeforeUnmount, reactive} from 'vue';
+import { LngLat, YMap, BehaviorMapEventHandler, BehaviorType, DomEvent } from '@yandex/ymaps3-types';
+import { YandexMap, YandexMapDefaultSchemeLayer, YandexMapDefaultFeaturesLayer, YandexMapMarker, YandexMapZoomControl, YandexMapControls, YandexMapDefaultMarker, YandexMapGeolocationControl, YandexMapControlButton, YandexMapListener, YandexMapEntity, } from 'vue-yandex-maps';
+
+const BEHAVIOR: BehaviorType[] = ['drag'];
+
+const events = reactive({
+  behavior: {
+    drag: false,
+  },
+});
 
 
 const map = shallowRef<null | YMap>(null);
@@ -43,6 +62,41 @@ const markers = ref([]);
 const timedCounter = ref(1);
 const isFullscreen = ref(false);
 
+
+function debounce<T extends Function>(func: T, delay: number): (...args: any[]) => void {
+  let timeoutId: ReturnType<typeof setTimeout>;
+
+  return function _(this: any, ...args: any[]): void {
+    clearTimeout(timeoutId);
+
+    timeoutId = setTimeout(() => {
+      func.apply(this, args);
+    }, delay);
+  };
+}
+
+const createEvent = <T extends keyof typeof events, E = keyof typeof events[T]>(category: T, type: E | boolean): any => {
+  const eventState = events[category] as any;
+
+  if (typeof type !== 'boolean') {
+    const endEvent = debounce(() => {
+      eventState[type] = false;
+    }, 250);
+
+    return (object: Record<string, any>, event?: DomEvent) => {
+      console.log(`${type} Object: `, object, `\n`, `${type} Event: `, event);
+
+      eventState[type] = true;
+      endEvent();
+    };
+  }
+  return (object: Parameters<BehaviorMapEventHandler>[0]) => {
+    addMarkersToMap();
+    if (!(object.type in events.behavior)) return;
+
+    eventState[object.type] = type;
+  };
+};
 // red markers on map
 const mainMarkers = [
   {
