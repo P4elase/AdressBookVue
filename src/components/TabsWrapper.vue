@@ -1,4 +1,6 @@
 <template>
+  <div class="col-12">
+
     <div class="tabs">
       <ul class="tabs__header">
         <li v-for="(tab, index) in $slots.default()" :key="index" :class="{ selected: tab.props.title == selectedTitle }" @click="selectedTitle = tab.props.title">
@@ -7,6 +9,8 @@
       </ul>
       <slot />
     </div>
+
+  </div>
   </template>
   
   <script>
@@ -97,18 +101,13 @@ ul {
 }
 
 .tabs__header {
-    max-width: 649px;
     background-color: rgb(18, 166, 203);
     border-radius: 5%;
     list-style: none;
-    padding-left: 0em;
-    padding-right: 0em;
     display: flex;
     justify-content: center;
     position: fixed;
     bottom: 0em;
-    right: 0em;
-    left: 0em;
     margin: 0%;
     width: 100%;
     z-index: 1000;

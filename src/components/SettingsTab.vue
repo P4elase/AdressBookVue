@@ -1,5 +1,5 @@
 <template>
-          <nav>
+    <nav>
         <h1><img src="../img/house-heart.svg" alt="Cart" id="navicon"> Настройки</h1>
     </nav>
     <br>
@@ -23,9 +23,15 @@
     <div class="install">
         <button id="install" hidden>Установить приложение</button>
     </div>
+    <br>
+    <div class="import" style="display: flex; justify-content: center;">
+        <button id="import" @click="importJson">Import JSON</button>
+    </div>
     <footer>
         <br>
+        <img src="../img/logoMRF.png" style="max-height: 6em; max-width: 8em">
         <h6>All rights NOT reserved®</h6>
+        <h6><a href="https://yandex.ru/legal/maps_termsofuse/">Условия использования YandexMaps</a></h6>
         <h6><a href="https://github.com/P4elase" target="_blank" rel="noopener noreferrer">GitHub@P4elase</a></h6>
         <br>
     </footer>
@@ -44,6 +50,30 @@ const toggleDarkMode = () => {
     let darkModeState = document.body.classList.contains('dark-mode') ? 'enabled' : 'disabled';
     setCookie('darkMode', darkModeState, 365);
 }
+
+const importJson = async () => {
+    const inputElement = document.createElement('input');
+    inputElement.type = 'file';
+    inputElement.accept = '.json';
+    inputElement.onchange = async (event) => {
+        try {
+            const file = event.target.files[0];
+            if (!file) throw new Error('Не выбран файл');
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const jsonData = JSON.parse(e.target.result);
+                localStorage.setItem('streets', JSON.stringify(jsonData));
+                alert('JSON успешно импортирован!');
+                window.location.reload();
+            };
+            reader.readAsText(file);
+        } catch (error) {
+            console.error(error.message);
+            alert('Ошибка при импорте JSON');
+        }
+    };
+    inputElement.click();
+};
 
 const setCookie = (name, value, days) => {
     let expires = "";

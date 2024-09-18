@@ -1,7 +1,7 @@
 <template>
     <p>
         {{ address }}
-        <button class="btn3" @dblclick="$emit('delete-item', id)"><img src="../img/trash3.svg"></button>
+        <button class="btn3" @click="$emit('delete-item', id)"><img src="../img/trash3.svg"></button>
     </p>
 </template>
 

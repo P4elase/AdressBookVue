@@ -1,6 +1,6 @@
 <template>
     <nav>
-        <h1><img src="../img/house-heart.svg" alt="Cart" id="navicon"> Список адресов</h1>
+        <h1><img src="../img/house-heart.svg" alt="Cart" id="navicon"> Домовая помощь</h1>
     </nav>
     <br>
   <!-- <h2>Поиск по карте</h2> -->
@@ -12,13 +12,13 @@
           </label>
         </div>
       </div>
-      <dropdown-list class="col-10" id="search">
+      <div class="col-10 scrollable-list dropdown-list" id="search">
         <option v-for="(item, index) in searchResponse ?? []" :key="item.geometry?.coordinates.join(',') ?? index"
           :value="item.geometry?.coordinates" :id="`search-option-${item.geometry?.coordinates}`"
           @click="onSearchChange">
           {{ item.properties.name }} ({{ item.properties.description }} )
       </option>
-      </dropdown-list>
+    </div>
   </div>
   <br>
 
@@ -173,12 +173,12 @@ onMounted(loadList);
 label{
   display: block;
 }
-.dropdown-list option ul li:focus::marker {
+#dropdown-list option ul li:focus::marker {
   display: none;
 }
 
-.dropdown-list::before,
-.dropdown-list::after {
+#dropdown-list::before,
+#dropdown-list::after {
   content: none;
 }
 
@@ -212,14 +212,14 @@ label{
     }
 }
 
-dropdown-list {
+#dropdown-list {
   display: list-item;
   max-width: 560px;
   position: absolute;
   z-index: 99;
 }
 
-dropdown-list>#search.col-9::marker {
+#dropdown-list>#search.col-9::marker {
   display: none;
 }
 
